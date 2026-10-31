@@ -1,0 +1,7 @@
+<?php
+namespace App\Http\Controllers\Api;
+use App\Http\Controllers\Controller;use Illuminate\Http\Request;use Illuminate\Support\Facades\DB;
+class RewardController extends Controller {
+ public function index(Request $r){$u=$r->user();$reward=$u->reward()->firstOrCreate([],['xp_total'=>0,'level'=>1]);$next=$reward->level*100;return response()->json(['summary'=>['xp_total'=>$reward->xp_total,'level'=>$reward->level,'xp_in_level'=>$reward->xp_total-(($reward->level-1)*100),'xp_for_next_level'=>$next,'progress_percent'=>min(100,(int)round((($reward->xp_total-(($reward->level-1)*100))/100)*100))],'badges'=>$u->badges()->orderByDesc('earned_at')->get(),'events'=>$u->xpEvents()->latest()->limit(30)->get()]);}
+ public function award(Request $r){$d=$r->validate(['event_key'=>'required|string|max:160','event_type'=>'required|string|max:60','xp'=>'required|integer|min:1|max:100','metadata'=>'nullable|array']);$u=$r->user();$result=DB::transaction(function()use($u,$d){$existing=$u->xpEvents()->where('event_key',$d['event_key'])->first();if($existing)return ['duplicate'=>true,'event'=>$existing];$event=$u->xpEvents()->create($d);$reward=$u->reward()->firstOrCreate([],['xp_total'=>0,'level'=>1]);$reward->xp_total += $d['xp'];$reward->level=max(1,(int)floor($reward->xp_total/100)+1);$reward->save();return ['duplicate'=>false,'event'=>$event,'reward'=>$reward];});return response()->json($result,$result['duplicate']?200:201);}
+}

@@ -1,0 +1,151 @@
+openapi: 3.0.3
+info:
+  title: HabitTrack API
+  version: 1.0.0
+  description: REST API for habits, daily entries, goals, tasks and focus sessions.
+servers:
+  - url: http://127.0.0.1:8000/api
+security:
+  - bearerAuth: []
+paths:
+  /auth/register:
+    post:
+      security: []
+      summary: Create account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email, password, password_confirmation]
+              properties:
+                name: {type: string}
+                email: {type: string, format: email}
+                password: {type: string, minLength: 10}
+                password_confirmation: {type: string}
+      responses:
+        '201': {description: Created}
+        '422': {description: Validation error}
+  /auth/login:
+    post:
+      security: []
+      summary: Login and receive Sanctum token
+      responses:
+        '200': {description: Authenticated}
+        '422': {description: Invalid credentials}
+  /auth/me:
+    get:
+      summary: Current user
+      responses:
+        '200': {description: Current user}
+        '401': {description: Unauthorized}
+  /auth/logout:
+    post:
+      summary: Revoke current token
+      responses:
+        '200': {description: Logged out}
+  /dashboard:
+    get:
+      summary: Dashboard counters and today's habits
+      responses:
+        '200': {description: Dashboard data}
+  /analytics:
+    get:
+      summary: Last seven days analytics
+      responses:
+        '200': {description: Analytics data}
+  /habits:
+    get:
+      summary: List current user's habits
+      responses:
+        '200': {description: Paginated habits}
+    post:
+      summary: Create habit
+      responses:
+        '201': {description: Created}
+  /habits/{habit}:
+    parameters:
+      - in: path
+        name: habit
+        required: true
+        schema: {type: integer}
+    get:
+      summary: Get habit and entries
+      responses:
+        '200': {description: Habit details}
+        '404': {description: Not found}
+    put:
+      summary: Update habit
+      responses:
+        '200': {description: Updated}
+    delete:
+      summary: Delete habit
+      responses:
+        '204': {description: Deleted}
+  /habits/{habit}/entries:
+    put:
+      summary: Create or update a daily habit entry
+      parameters:
+        - in: path
+          name: habit
+          required: true
+          schema: {type: integer}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [entry_date, status]
+              properties:
+                entry_date: {type: string, format: date}
+                status: {type: string, enum: [completed, partial, missed]}
+                value: {type: number}
+                duration_minutes: {type: integer}
+                note: {type: string}
+      responses:
+        '200': {description: Saved}
+  /goals:
+    get:
+      summary: List goals
+      responses:
+        '200': {description: Paginated goals}
+    post:
+      summary: Create goal
+      responses:
+        '201': {description: Created}
+  /tasks:
+    get:
+      summary: List tasks
+      responses:
+        '200': {description: Paginated tasks}
+    post:
+      summary: Create task
+      responses:
+        '201': {description: Created}
+  /focus-sessions:
+    get:
+      summary: List focus sessions
+      responses:
+        '200': {description: Paginated sessions}
+    post:
+      summary: Start focus session
+      responses:
+        '201': {description: Created}
+  /focus-sessions/{session}/finish:
+    post:
+      summary: Finish focus session
+      parameters:
+        - in: path
+          name: session
+          required: true
+          schema: {type: integer}
+      responses:
+        '200': {description: Session finished}
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: Sanctum token

@@ -1,0 +1,4 @@
+<?php
+namespace App\Http\Controllers\Api;
+use App\Http\Controllers\Controller;use Illuminate\Http\Request;
+class DailyNoteController extends Controller {public function show(Request $r){$d=$r->validate(['date'=>'nullable|date']);$date=$d['date']??today()->toDateString();return response()->json(['note'=>$r->user()->dailyNotes()->whereDate('note_date',$date)->first()]);}public function save(Request $r){$d=$r->validate(['date'=>'required|date','content'=>'required|string|max:10000']);$note=$r->user()->dailyNotes()->updateOrCreate(['note_date'=>$d['date']],['content'=>$d['content']]);return response()->json(['note'=>$note]);}}

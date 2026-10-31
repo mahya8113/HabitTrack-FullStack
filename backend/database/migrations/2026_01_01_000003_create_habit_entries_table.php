@@ -1,0 +1,3 @@
+<?php
+use Illuminate\Database\Migrations\Migration; use Illuminate\Database\Schema\Blueprint; use Illuminate\Support\Facades\Schema;
+return new class extends Migration { public function up(): void {Schema::create('habit_entries',function(Blueprint $t){$t->id();$t->foreignId('habit_id')->constrained()->cascadeOnDelete();$t->foreignId('user_id')->constrained()->cascadeOnDelete();$t->date('entry_date');$t->string('status')->default('completed');$t->decimal('value',10,2)->default(1);$t->unsignedSmallInteger('duration_minutes')->nullable();$t->text('note')->nullable();$t->timestamp('completed_at')->nullable();$t->timestamps();$t->unique(['habit_id','entry_date']);$t->index(['user_id','entry_date']);});} public function down(): void {Schema::dropIfExists('habit_entries');} };

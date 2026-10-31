@@ -1,0 +1,9 @@
+<?php
+use Illuminate\Database\Migrations\Migration; use Illuminate\Database\Schema\Blueprint; use Illuminate\Support\Facades\Schema;
+return new class extends Migration { public function up(): void {
+Schema::create('goal_milestones',function(Blueprint $t){$t->id();$t->foreignId('goal_id')->constrained()->cascadeOnDelete();$t->foreignId('user_id')->constrained()->cascadeOnDelete();$t->string('title');$t->date('due_at')->nullable();$t->boolean('is_completed')->default(false);$t->timestamp('completed_at')->nullable();$t->unsignedInteger('position')->default(0);$t->timestamps();$t->index(['user_id','goal_id']);});
+Schema::create('daily_notes',function(Blueprint $t){$t->id();$t->foreignId('user_id')->constrained()->cascadeOnDelete();$t->date('note_date');$t->text('content');$t->timestamps();$t->unique(['user_id','note_date']);});
+Schema::create('user_rewards',function(Blueprint $t){$t->id();$t->foreignId('user_id')->unique()->constrained()->cascadeOnDelete();$t->unsignedInteger('xp_total')->default(0);$t->unsignedInteger('level')->default(1);$t->timestamps();});
+Schema::create('xp_events',function(Blueprint $t){$t->id();$t->foreignId('user_id')->constrained()->cascadeOnDelete();$t->string('event_key');$t->string('event_type',60);$t->unsignedInteger('xp');$t->json('metadata')->nullable();$t->timestamps();$t->unique(['user_id','event_key']);$t->index(['user_id','created_at']);});
+Schema::create('user_badges',function(Blueprint $t){$t->id();$t->foreignId('user_id')->constrained()->cascadeOnDelete();$t->string('badge_key');$t->string('title');$t->text('description')->nullable();$t->timestamp('earned_at');$t->timestamps();$t->unique(['user_id','badge_key']);});
+} public function down(): void {Schema::dropIfExists('user_badges');Schema::dropIfExists('xp_events');Schema::dropIfExists('user_rewards');Schema::dropIfExists('daily_notes');Schema::dropIfExists('goal_milestones');}};

@@ -1,0 +1,3 @@
+<?php
+namespace App\Models; use Illuminate\Database\Eloquent\Model;
+class GoalMilestone extends Model {protected $fillable=['goal_id','user_id','title','due_at','is_completed','completed_at','position']; protected function casts():array{return ['due_at'=>'date','is_completed'=>'boolean','completed_at'=>'datetime','position'=>'integer'];} public function goal(){return $this->belongsTo(Goal::class);} }

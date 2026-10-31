@@ -1,0 +1,28 @@
+{
+  "name": "habittrack/backend",
+  "type": "project",
+  "description": "HabitTrack REST API",
+  "require": {
+    "php": "^8.4",
+    "laravel/framework": "^12.0",
+    "laravel/sanctum": "^4.0"
+  },
+  "require-dev": {
+    "fakerphp/faker": "^1.23",
+    "laravel/pail": "^1.2",
+    "mockery/mockery": "^1.6",
+    "nunomaduro/collision": "^8.6",
+    "pestphp/pest": "^3.8",
+    "pestphp/pest-plugin-laravel": "^3.2"
+  },
+  "autoload": {"psr-4": {"App\\": "app/", "Database\\Factories\\": "database/factories/", "Database\\Seeders\\": "database/seeders/"}},
+  "autoload-dev": {"psr-4": {"Tests\\": "tests/"}},
+  "scripts": {
+    "post-autoload-dump": ["@php artisan package:discover --ansi"],
+    "test": "@php artisan test",
+    "setup": ["composer install", "@php -r \"file_exists('.env') || copy('.env.example', '.env');\"", "@php artisan key:generate"]
+  },
+  "config": {"optimize-autoloader": true, "preferred-install": "dist", "sort-packages": true, "allow-plugins": {"pestphp/pest-plugin": true}},
+  "minimum-stability": "stable",
+  "prefer-stable": true
+}
